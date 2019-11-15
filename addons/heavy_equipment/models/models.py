@@ -90,6 +90,12 @@ class route(models.Model):
         default=0,
     )
 
+    @api.constrains('distance')
+    def _no_negative(self):
+        data = self.mapped('distance')
+        if any(n < 0 for n in data):
+            raise models.ValidationError('No se aceptan números negativos')
+
 
 class material(models.Model):
     _name = 'heavy_equipment.material'

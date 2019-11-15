@@ -1,8 +1,7 @@
 <odoo>
   <data>
     <!-- explicit list view definition -->
-    <!--
-    <record model="ir.ui.view" id="heavy_equipment.list">
+    <record model="ir.ui.view" id="heavy_equipment.project">
       <field name="name">heavy_equipment list</field>
       <field name="model">heavy_equipment.heavy_equipment</field>
       <field name="arch" type="xml">
@@ -13,7 +12,6 @@
         </tree>
       </field>
     </record>
-    -->
 
     <!-- actions opening views on models -->
     <!--
