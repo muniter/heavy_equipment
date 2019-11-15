@@ -1,0 +1,67 @@
+version: '3'
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:1.7
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+      - 80:80
+      - 443:443
+    networks:
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/traefik.toml:/traefik.toml
+      - ./traefik/acme.json:/acme.json
+
+  web:
+    container_name: odoo_web
+    build: ./build
+    image: odoo-lintec:12.0
+    restart: unless-stopped
+    depends_on:
+      - db
+    expose:
+      - "8069"
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=Teigjuvdeg
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ../addons:/mnt/extra-addons
+    networks:
+      - web
+      - odoo-network
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.basic.frontend.rule=Host:odoo.lintec.xyz"
+      - "traefik.basic.port=8069"
+      - "traefik.basic.protocol=http"
+
+  db:
+    container_name: odoo_db
+    image: postgres:10
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=Teigjuvdeg
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    networks:
+      - odoo-network
+
+volumes:
+  odoo-web-data:
+  odoo-db-data:
+  nginx_hosts:
+  nginx_html:
+networks:
+  odoo-network:
+  web:
+    external: true          

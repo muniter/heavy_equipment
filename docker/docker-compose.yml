@@ -1,0 +1,39 @@
+version: '3'
+services:
+  web:
+    container_name: odoo_web_lintec
+    build: ./build
+    image: odoo-lintec-per:13.0
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=Teigjuvdeg
+    volumes:
+      - odoo-web-data-lintec:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ../addons:/mnt/extra-addons
+    command: odoo -c /etc/odoo/odoo.conf -d odoo --dev=all
+    networks:
+      odoo-network-lintec:
+  db:
+    container_name: odoo_db_lintec
+    image: postgres:10
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=Teigjuvdeg
+    volumes:
+      - odoo-db-data-lintec:/var/lib/postgresql/data
+    networks:
+      odoo-network-lintec:
+volumes:
+  odoo-web-data-lintec:
+  odoo-db-data-lintec:
+networks:
+  odoo-network-lintec:

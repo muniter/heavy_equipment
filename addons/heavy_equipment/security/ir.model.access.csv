@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_heavy_equipment_heavy_equipment,heavy_equipment.heavy_equipment,model_heavy_equipment_heavy_equipment,,1,0,0,0

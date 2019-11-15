@@ -1,0 +1,5 @@
+pandas
+unidecode
+xlrd
+odoo12-addon-mass-editing
+odoo12-addon-web-responsive

@@ -1,0 +1,33 @@
+debug = false
+
+logLevel = "DEBUG"
+defaultEntryPoints = ["https","http"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "odoo.lintec.xyz"
+watch = true
+exposedByDefault = false
+
+[acme]
+email = "jlopez@lintec.xyz"
+storage = "acme.json"
+entryPoint = "https"
+onHostRule = true
+[acme.httpChallenge]
+entryPoint = "http"
+acmeLogging=true 
+onDemand = false
+[[acme.domains]]
+   main = "odoo.lintec.xyz"
