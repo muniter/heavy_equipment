@@ -105,10 +105,10 @@ class route(models.Model):
         if any(n < 0 for n in data):
             raise models.ValidationError('No se aceptan números negativos')
 
-    @api.onchange('site_1', 'site_2')
+    @api.onchange('origin', 'destination')
     def _name_route(self):
-        if self.site_1 and self.site_2:
-            self.name = self.site_1.name + ' - ' + self.site_2.name
+        if self.origin and self.destination:
+            self.name = self.origin.name + ' - ' + self.destination.name
 
 
 class material(models.Model):
@@ -150,6 +150,13 @@ class work(models.Model):
     vehicle = fields.Many2one(
         comodel_name='fleet.vehicle',
         string='Vehículo',
+        required='True',
+    )
+
+    plate = fields.Char(
+        comodel_name='fleet.vehicle',
+        string='Placa',
+        related='vehicle.license_plate',
         required='True',
     )
 
