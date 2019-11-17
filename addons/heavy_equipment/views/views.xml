@@ -1,27 +1,200 @@
 <odoo>
   <data>
-    <!-- explicit list view definition -->
-    <record model="ir.ui.view" id="heavy_equipment.project">
-      <field name="name">heavy_equipment list</field>
-      <field name="model">heavy_equipment.heavy_equipment</field>
+      <!-- Project views  -->
+    <record model="ir.actions.act_window" id="heavy_equipment.project_action">
+      <field name="name">Proyectos</field>
+      <field name="res_model">heavy_equipment.project</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.project_form">
+      <field name="name">Projecto Formulario</field>
+      <field name="model">heavy_equipment.project</field>
+      <field name="arch" type="xml">
+        <form>
+            <group>
+                <field name="project_id"/>
+                <field name="contractor"/>
+                <field name="start"/>
+                <field name="end"/>
+                <field name="description"/>
+            </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.project_list">
+      <field name="name">Projecto Lista</field>
+      <field name="model">heavy_equipment.project</field>
       <field name="arch" type="xml">
         <tree>
           <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
+          <field name="start"/>
+          <field name="end"/>
+          <field name="contractor"/>
         </tree>
       </field>
     </record>
 
-    <!-- actions opening views on models -->
-    <!--
-    <record model="ir.actions.act_window" id="heavy_equipment.action_window">
-      <field name="name">heavy_equipment window</field>
-      <field name="res_model">heavy_equipment.heavy_equipment</field>
+    <!-- Sites views -->
+    <record model="ir.actions.act_window" id="heavy_equipment.sites_action">
+      <field name="name">Sitios</field>
+      <field name="res_model">heavy_equipment.site</field>
       <field name="view_mode">tree,form</field>
     </record>
-    -->
 
+    <record model="ir.ui.view" id="heavy_equipment.site_form">
+      <field name="name">Sitio Formulario</field>
+      <field name="model">heavy_equipment.site</field>
+      <field name="arch" type="xml">
+        <form>
+            <group>
+                <field name="name"/>
+                <field name="project"/>
+                <field name="external"/>
+                <field name="description"/>
+            </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.site_list">
+      <field name="name">Sitio Lista</field>
+      <field name="model">heavy_equipment.site</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="external"/>
+          <field name="project"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- Routes Views  -->
+
+    <record model="ir.actions.act_window" id="heavy_equipment.route_action">
+      <field name="name">Rutas</field>
+      <field name="res_model">heavy_equipment.route</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.route_form">
+      <field name="name">Ruta Formulario</field>
+      <field name="model">heavy_equipment.route</field>
+      <field name="arch" type="xml">
+        <form>
+            <group>
+                <field name="name"/>
+                <field name="project"/>
+                <field name="active"/>
+                <field name="origin"/>
+                <field name="destination"/>
+                <field name="distance"/>
+            </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.route_list">
+      <field name="name">Ruta Lista</field>
+      <field name="model">heavy_equipment.route</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="project"/>
+          <field name="origin"/>
+          <field name="destination"/>
+          <field name="distance"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- Materials view  -->
+
+    <record model="ir.actions.act_window" id="heavy_equipment.material_action">
+      <field name="name">Materiales</field>
+      <field name="res_model">heavy_equipment.material</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.material_form">
+      <field name="name">Projecto Formulario</field>
+      <field name="model">heavy_equipment.material</field>
+      <field name="arch" type="xml">
+        <form>
+            <group>
+                <field name="name"/>
+                <field name="project"/>
+                <field name="cost"/>
+                <field name="price"/>
+                <field name="description"/>
+            </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.material_list">
+      <field name="name">Projecto Lista</field>
+      <field name="model">heavy_equipment.material</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="project"/>
+          <field name="cost"/>
+          <field name="price"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- work views  -->
+
+    <record model="ir.actions.act_window" id="heavy_equipment.work_action">
+      <field name="name">Trabajos</field>
+      <field name="res_model">heavy_equipment.work</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.work_form">
+      <field name="name">Trabajo Formulario</field>
+      <field name="model">heavy_equipment.work</field>
+      <field name="arch" type="xml">
+        <form>
+            <group>
+                <group>
+                    <field name="project"/>
+                    <field name="vehicle"/>
+                    <field name="work_type"/>
+                    <field name="internal"/>
+                    <field name="route" attrs="{'invisible': [('internal', '=', True)]}"/>
+                    <field name="site" attrs="{'invisible': [('internal', '=', False), ('work_type', '=', 'trans')]}"/>
+                </group>
+                <group>
+                    <field name="date"/>
+                    <field name="material" attrs="{'invisible': [('work_type', '=', 'hora')], 'required': [('work_type','=', 'trans')]}"/>
+                    <field name="amount" attrs="{'invisible': [('work_type', '=', 'hora')]}"/>
+                    <field name="unit_quantity"/>
+                    <field name="total_quantity"/>
+                </group>
+            </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.work_list">
+      <field name="name">Trabajo Lista</field>
+      <field name="model">heavy_equipment.work</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="vehicle"/>
+          <field name="date"/>
+          <field name="work_type"/>
+          <field name="project"/>
+          <field name="material"/>
+          <field name="amount"/>
+          <field name="total_quantity"/>
+        </tree>
+      </field>
+    </record>
     <!-- server action to the one above -->
     <!--
     <record model="ir.actions.server" id="heavy_equipment.action_server">
@@ -38,21 +211,5 @@
     </record>
     -->
 
-    <!-- Top menu item -->
-    <!--
-    <menuitem name="heavy_equipment" id="heavy_equipment.menu_root"/>
-    -->
-    <!-- menu categories -->
-    <!--
-    <menuitem name="Menu 1" id="heavy_equipment.menu_1" parent="heavy_equipment.menu_root"/>
-    <menuitem name="Menu 2" id="heavy_equipment.menu_2" parent="heavy_equipment.menu_root"/>
-    -->
-    <!-- actions -->
-    <!--
-    <menuitem name="List" id="heavy_equipment.menu_1_list" parent="heavy_equipment.menu_1"
-              action="heavy_equipment.action_window"/>
-    <menuitem name="Server to list" id="heavy_equipment" parent="heavy_equipment.menu_2"
-              action="heavy_equipment.action_server"/>
-    -->
   </data>
 </odoo>

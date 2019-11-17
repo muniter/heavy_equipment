@@ -6,11 +6,13 @@ class project(models.Model):
     _inherits = {'project.project': 'project_id'}
     _order = 'name'
 
-    name = fields.Char(
-        related='project_id.name',
-        inherited=True,
-        readonly=False,
+    project_id = fields.Many2one(
+        string='Proyecto',
+        comodel_name='project.project',
+        delegate=True,
         required=True,
+        readonly=False,
+        ondelete='cascade',
     )
 
     contractor = fields.Many2one(
@@ -65,23 +67,30 @@ class route(models.Model):
     _name = 'heavy_equipment.route'
     _order = 'name'
 
+    name = fields.Char(
+        string='Nombre',
+        required=True,
+    )
+
     project = fields.Many2many(
         comodel_name='heavy_equipment.project',
         string='Proyecto',
         required='True',
     )
 
-    active = fields.Bolean()
+    active = fields.Boolean(
+        default=True,
+    )
 
-    site_1 = fields.Many2one(
+    origin = fields.Many2one(
         comodel_name='heavy_equipment.site',
-        string='Sitio 1',
+        string='Origen',
         required=True,
     )
 
-    site_2 = fields.Many2one(
+    destination = fields.Many2one(
         comodel_name='heavy_equipment.site',
-        string='Sitio 2',
+        string='Destino',
         required=True,
     )
 
@@ -96,6 +105,11 @@ class route(models.Model):
         if any(n < 0 for n in data):
             raise models.ValidationError('No se aceptan números negativos')
 
+    @api.onchange('site_1', 'site_2')
+    def _name_route(self):
+        if self.site_1 and self.site_2:
+            self.name = self.site_1.name + ' - ' + self.site_2.name
+
 
 class material(models.Model):
     _name = 'heavy_equipment.material'
@@ -104,6 +118,10 @@ class material(models.Model):
     name = fields.Char(
         string='Nombre',
         required=True,
+    )
+
+    description = fields.Text(
+        string='Descripción',
     )
 
     project = fields.Many2many(
@@ -121,9 +139,9 @@ class material(models.Model):
 
 class work(models.Model):
     _name = 'heavy_equipment.work'
-    _order = 'name'
+    _order = 'date'
 
-    project = fields.Many2many(
+    project = fields.Many2one(
         comodel_name='heavy_equipment.project',
         string='Proyecto',
         required='True',
@@ -131,7 +149,13 @@ class work(models.Model):
 
     vehicle = fields.Many2one(
         comodel_name='fleet.vehicle',
-        string='Vehículos en Obra',
+        string='Vehículo',
+        required='True',
+    )
+
+    date = fields.Date(
+        string='Fecha',
+        required='True',
     )
 
     work_type = fields.Selection(
@@ -173,12 +197,21 @@ class work(models.Model):
     total_quantity = fields.Float(
         string='Cantidad Total',
         readonly=True,
-        compute=lambda x: x.unit_quantity * x.amount,
+        compute='_compute_total',
     )
 
-    @api.constrains('repetitions', 'unit_quantity')
+    @api.depends('unit_quantity', 'amount', 'work_type')
+    def _compute_total(self):
+        for record in self:
+            if record.work_type == 'hora':
+                record.total_quantity = record.unit_quantity
+                record.amount = 1
+            else:
+                record.total_quantity = record.unit_quantity * record.amount
+
+    @api.constrains('amount', 'unit_quantity', 'work_type')
     def _no_negative(self):
-        data = self.mapped('repetitions', 'unit_quantity')
+        data = self.mapped('amount') + self.mapped('unit_quantity')
         if any(n <= 0 for n in data):
             raise models.ValidationError('No se aceptan 0 o \
                                          números negativos')

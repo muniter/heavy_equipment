@@ -9,12 +9,15 @@
     """,
     'author': "My Company",
     'website': "http://www.yourcompany.com",
+    'application': True,
+    'installable': True,
     'category': 'Uncategorized',
     'version': '1.0',
     'depends': ['base', 'project', 'fleet'],
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'views/views.xml',
+        'views/menu.xml',
         'views/templates.xml',
     ],
     'demo': [
