@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Top menu items -->
+        <menuitem
+            name="Control Pesados"
+            id="heavy_equipment.base_menu"/>
+        <menuitem
+            name="Proyectos"
+            id="heavy_equipment.project_menu"
+            sequence="10"
+            parent="heavy_equipment.base_menu"
+            action="heavy_equipment.project_action"/>
+        <menuitem
+            name="Sitios"
+            id="heavy_equipment.sites_menu"
+            sequence="20"
+            parent="heavy_equipment.base_menu"
+            action="heavy_equipment.sites_action"/>
+        <menuitem
+            name="Rutas"
+            id="heavy_equipment.routes_menu"
+            sequence="30"
+            parent="heavy_equipment.base_menu"
+            action="heavy_equipment.route_action"/>
+        <menuitem
+            name="Materiales"
+            id="heavy_equipment.materials_menu"
+            sequence="40"
+            parent="heavy_equipment.base_menu"
+            action="heavy_equipment.material_action"/>
+        <menuitem
+            name="Trabajo"
+            sequence="50"
+            id="heavy_equipment.work_menu"
+            parent="heavy_equipment.base_menu"
+            action="heavy_equipment.work_action"/>
+ -->
+    </data>
+</odoo>
