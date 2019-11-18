@@ -16,7 +16,7 @@ defaultEntryPoints = ["https","http"]
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"
-domain = "odoo.lintec.xyz"
+domain = "rjl.lintec.xyz"
 watch = true
 exposedByDefault = false
 
@@ -30,4 +30,4 @@ entryPoint = "http"
 acmeLogging=true 
 onDemand = false
 [[acme.domains]]
-   main = "odoo.lintec.xyz"
+   main = "rjl.lintec.xyz"
