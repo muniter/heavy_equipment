@@ -51,7 +51,7 @@
         <form>
             <group>
                 <field name="name"/>
-                <field name="project"/>
+                <field name="project" widget="many2many_tags"/>
                 <field name="external"/>
                 <field name="description"/>
             </group>
@@ -66,7 +66,7 @@
         <tree>
           <field name="name"/>
           <field name="external"/>
-          <field name="project"/>
+          <field name="project" widget="many2many_tags"/>
         </tree>
       </field>
     </record>
@@ -86,7 +86,7 @@
         <form>
             <group>
                 <field name="name"/>
-                <field name="project"/>
+                <field name="project" widget="many2many_tags"/>
                 <field name="active"/>
                 <field name="origin"/>
                 <field name="destination"/>
@@ -102,7 +102,7 @@
       <field name="arch" type="xml">
         <tree>
           <field name="name"/>
-          <field name="project"/>
+          <field name="project" widget="many2many_tags"/>
           <field name="origin"/>
           <field name="destination"/>
           <field name="distance"/>
@@ -125,7 +125,7 @@
         <form>
             <group>
                 <field name="name"/>
-                <field name="project"/>
+                <field name="project" widget="many2many_tags"/>
                 <field name="cost"/>
                 <field name="price"/>
                 <field name="description"/>
@@ -140,7 +140,7 @@
       <field name="arch" type="xml">
         <tree>
           <field name="name"/>
-          <field name="project"/>
+          <field name="project" widget="many2many_tags"/>
           <field name="cost"/>
           <field name="price"/>
         </tree>
