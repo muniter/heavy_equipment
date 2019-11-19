@@ -149,10 +149,10 @@
 
     <!-- work views  -->
 
-    <record model="ir.actions.act_window" id="heavy_equipment.work_action">
+    <record model="ir.actions.act_window" id="heavy_equipment.work_action" context="{'pivot_measures': ['amount']}">
       <field name="name">Trabajos</field>
       <field name="res_model">heavy_equipment.work</field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">tree,form,pivot</field>
     </record>
 
     <record model="ir.ui.view" id="heavy_equipment.work_form">
@@ -197,6 +197,39 @@
         </tree>
       </field>
     </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.work_pivot">
+      <field name="name">Trabajo Pivot</field>
+      <field name="model">heavy_equipment.work</field>
+      <field name="arch" type="xml">
+          <pivot string="Análisis de Trabajo" display_quantity="False">
+              <field name="plate" type="col"/>
+              <field name="amount" type="measure"/>
+              <field name="route" type="row"/>
+              <field name="date" interval="day" type="row"/>
+          </pivot>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.work_search">
+        <field name="name">Trabajo Busqueda</field>
+        <field name="model">heavy_equipment.work</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="plate"/>
+                <field name="route" domain="[('route','ilike', self)]"/>
+                <filter name="filter_transport" string="Transporte" domain="[('work_type','=','trans')]"/>
+                <filter name="filter_hourly" string="Horario" domain="[('work_type','=','hora')]"/>
+                <filter name="group_work_type" string="Por Tipo" context="{'group_by': 'work_type'}"/>
+                <filter name="group_route" string="Por Rutas" context="{'group_by': 'route'}"/>
+                <filter name="group_site" string="Por Sitio" context="{'group_by': 'site'}"/>
+                <filter name="group_material" string="Por Material" context="{'group_by': 'material'}"/>
+                <filter name="group_plate" string="Por Placa" context="{'group_by': 'plate'}"/>
+                <filter name="group_date" string="Por Fecha" context="{'group_by': 'date'}"/>
+            </search>
+        </field>
+    </record>
+
     <!-- server action to the one above -->
     <!--
     <record model="ir.actions.server" id="heavy_equipment.action_server">
