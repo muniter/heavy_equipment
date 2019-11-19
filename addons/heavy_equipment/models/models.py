@@ -157,7 +157,7 @@ class work(models.Model):
         comodel_name='fleet.vehicle',
         string='Placa',
         related='vehicle.license_plate',
-        required='True',
+        store=True,
     )
 
     date = fields.Date(
