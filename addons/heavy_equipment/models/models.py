@@ -37,6 +37,14 @@ class project(models.Model):
         string='Vehículos en Obra',
     )
 
+    state = fields.Selection(
+        [('draft', 'Borrador'),
+         ('active', 'En ejecución'),
+         ('done', 'Finalizado')],
+        string='Estado',
+        default='draft',
+    )
+
 
 class site(models.Model):
     _name = 'heavy_equipment.site'

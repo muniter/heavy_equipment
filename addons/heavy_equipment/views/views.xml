@@ -11,6 +11,9 @@
       <field name="name">Projecto Formulario</field>
       <field name="model">heavy_equipment.project</field>
       <field name="arch" type="xml">
+        <header>
+            <field name="state"  widget="statusbar" options="{'clickable': '1'}"/>
+        </header>
         <form>
             <group>
                 <field name="project_id"/>
