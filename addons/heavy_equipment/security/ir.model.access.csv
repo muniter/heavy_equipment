@@ -4,3 +4,4 @@ access_heavy_equipment_site,heavy_equipment.site,model_heavy_equipment_site,,1,1
 access_heavy_equipment_route,heavy_equipment.route,model_heavy_equipment_route,,1,1,1,1
 access_heavy_equipment_material,heavy_equipment.material,model_heavy_equipment_material,,1,1,1,1
 access_heavy_equipment_work,heavy_equipment.work,model_heavy_equipment_work,,1,1,1,1
+access_heavy_equipment_rate,heavy_equipment.rate,model_heavy_equipment_rate,,1,1,1,1
