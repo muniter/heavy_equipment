@@ -107,6 +107,17 @@ class route(models.Model):
         default=0,
     )
 
+    currency_id = fields.Many2one(
+        string='Moneda',
+        comodel_name='res.currency',
+        default=lambda x: x.env['res.currency'].search([], limit=1),
+    )
+
+    cost = fields.monetary(
+        string='costo (m3/km)',
+        currency_field='currency_id',
+    )
+
     @api.constrains('distance')
     def _no_negative(self):
         data = self.mapped('distance')
@@ -138,11 +149,21 @@ class material(models.Model):
         required='True',
     )
 
-    currency_id = fields.Many2one('res.currency')
+    currency_id = fields.Many2one(
+        string='Moneda',
+        comodel_name='res.currency',
+        default=lambda x: x.env['res.currency'].search([], limit=1),
+    )
 
-    cost = fields.Monetary('Costo', 'currency_id')
+    cost = fields.Monetary(
+        string='Costo (M3)',
+        currency_field='currency_id',
+    )
 
-    price = fields.Monetary('Precio', 'currency_id')
+    price = fields.Monetary(
+        string='Precio (M3)',
+        currency_field='currency_id',
+    )
 
 
 class work(models.Model):
@@ -205,14 +226,25 @@ class work(models.Model):
     )
 
     unit_quantity = fields.Float(
-        string='Cantidad Horas/M3',
+        string='Cantidad (Horas ó M3)',
         required=True,
     )
 
     total_quantity = fields.Float(
-        string='Cantidad Total',
+        string='Total',
         readonly=True,
         compute='_compute_total',
+    )
+
+    currency_id = fields.Many2one(
+        string='moneda',
+        comodel_name='res.currency',
+        readonly=True,
+    )
+
+    total_cost = fields.monetary(
+        string='Costo Total',
+        currency_field='currency_id',
     )
 
     @api.depends('unit_quantity', 'amount', 'work_type')
@@ -230,3 +262,39 @@ class work(models.Model):
         if any(n <= 0 for n in data):
             raise models.ValidationError('No se aceptan 0 o \
                                          números negativos')
+
+
+# class rate(models.Model):
+#     _name = 'heavy_equipment.rate'
+#     _order = 'name'
+#
+#     project = fields.Many2one(
+#         comodel_name='heavy_equipment.project',
+#         string='Proyecto',
+#         required='True',
+#     )
+#
+#     vehicle = fields.Many2many(
+#         comodel_name='fleet.vehicle',
+#         string='Vehículos',
+#         required='True',
+#     )
+#
+#     work_type = fields.Selection(
+#         string='Tipo de Trabajo',
+#         required=True,
+#         default='trans',
+#         selection=[('trans', 'Transporte'),
+#                    ('hora', 'Horario')],
+#     )
+#
+#     currency_id = fields.Many2one(
+#         string='Moneda',
+#         comodel_name='res.currency',
+#         readonly=True,
+#     )
+#
+#     cost = fields.monetary(
+#         string='Costo Unitario',
+#         currency_field='currency_id',
+#     )

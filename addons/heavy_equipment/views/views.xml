@@ -94,6 +94,8 @@
                 <field name="origin"/>
                 <field name="destination"/>
                 <field name="distance"/>
+                <field name="currency_id"/>
+                <field name="cost"/>
             </group>
         </form>
       </field>
@@ -108,6 +110,7 @@
           <field name="project" widget="many2many_tags"/>
           <field name="origin"/>
           <field name="destination"/>
+          <field name="cost"/>
           <field name="distance"/>
         </tree>
       </field>
@@ -129,6 +132,7 @@
             <group>
                 <field name="name"/>
                 <field name="project" widget="many2many_tags"/>
+                <field name="currency_id"/>
                 <field name="cost"/>
                 <field name="price"/>
                 <field name="description"/>
