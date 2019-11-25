@@ -107,14 +107,18 @@ class route(models.Model):
         default=0,
     )
 
-    currency_id = fields.Many2one(
-        string='Moneda',
-        comodel_name='res.currency',
-        default=lambda x: x.env['res.currency'].search([], limit=1),
+    rate = fields.Many2one(
+        string='Tarifa',
+        comodel_name='heavy_equipment.rate',
     )
 
-    cost = fields.Monetary(
-        string='costo (m3/km)',
+    currency_id = fields.Many2one(
+        string='Moneda',
+        related='rate.currency_id',
+    )
+
+    rate_val = fields.Monetary(
+        related='rate.rate',
         currency_field='currency_id',
     )
 
@@ -156,12 +160,12 @@ class material(models.Model):
     )
 
     cost = fields.Monetary(
-        string='Costo (M3)',
+        string='Costo Compra (M3)',
         currency_field='currency_id',
     )
 
     price = fields.Monetary(
-        string='Precio (M3)',
+        string='Precio Venta (M3)',
         currency_field='currency_id',
     )
 
@@ -226,7 +230,7 @@ class work(models.Model):
     )
 
     unit_quantity = fields.Float(
-        string='Cantidad (Horas ó M3)',
+        string='Cantidad (Hr ó M3)',
         required=True,
     )
 
@@ -236,18 +240,62 @@ class work(models.Model):
         compute='_compute_total',
     )
 
+    rate = fields.Many2one(
+        required=True,
+        readonly=False,
+        store=True,
+        compute='_compute_rate',
+        string='Tarifa',
+        comodel_name='heavy_equipment.rate',
+    )
+
     currency_id = fields.Many2one(
-        string='moneda',
-        comodel_name='res.currency',
-        readonly=True,
+        string='Moneda',
+        related='rate.currency_id',
+    )
+
+    rate_val = fields.Monetary(
+        related='rate.rate',
+        currency_field='currency_id',
     )
 
     total_cost = fields.Monetary(
         string='Costo Total',
+        store=True,
         currency_field='currency_id',
+        compute='_compute_cost',
     )
 
-    @api.depends('unit_quantity', 'amount', 'work_type')
+    @api.constrains('amount', 'unit_quantity')
+    def _no_negative(self):
+        data = self.mapped('amount') + self.mapped('unit_quantity')
+        if any(n <= 0 for n in data):
+            raise models.ValidationError('No se aceptan 0 o \
+                                         números negativos')
+
+    @api.onchange('work_type', 'vehicle', 'project')
+    def _select_rate(self):
+        for record in self:
+            if record.work_type == 'trans':
+                record.rate = record.route.rate
+            elif record.project and record.vehicle and not record.rate:
+                record.rate = record.env['heavy_equipment.rate'].search(
+                    [('project', '=', record.project.id),
+                     ('work_type', '=', 'hora'),
+                     ('vehicles', 'in', record.vehicle.id)])
+
+    @api.depends('work_type', 'vehicle', 'project')
+    def _compute_rate(self):
+        for record in self:
+            if record.work_type == 'trans':
+                record.rate = record.route.rate
+            elif record.project and record.vehicle and not record.rate:
+                record.rate = record.env['heavy_equipment.rate'].search(
+                    [('project', '=', record.project.id),
+                     ('work_type', '=', 'hora'),
+                     ('vehicles', 'in', record.vehicle.id)])
+
+    @api.depends('unit_quantity', 'amount', 'work_type', 'rate_val')
     def _compute_total(self):
         for record in self:
             if record.work_type == 'hora':
@@ -256,45 +304,57 @@ class work(models.Model):
             else:
                 record.total_quantity = record.unit_quantity * record.amount
 
-    @api.constrains('amount', 'unit_quantity', 'work_type')
-    def _no_negative(self):
-        data = self.mapped('amount') + self.mapped('unit_quantity')
-        if any(n <= 0 for n in data):
-            raise models.ValidationError('No se aceptan 0 o \
-                                         números negativos')
+    @api.depends('rate', 'total_quantity')
+    def _compute_cost(self):
+        for record in self:
+            if record.work_type == 'trans':
+                rate = record.rate.rate * record.route.distance
+            else:
+                rate = record.rate.rate
+
+            record.total_cost = record.total_quantity * rate
 
 
-# class rate(models.Model):
-#     _name = 'heavy_equipment.rate'
-#     _order = 'name'
-#
-#     project = fields.Many2one(
-#         comodel_name='heavy_equipment.project',
-#         string='Proyecto',
-#         required='True',
-#     )
-#
-#     vehicle = fields.Many2many(
-#         comodel_name='fleet.vehicle',
-#         string='Vehículos',
-#         required='True',
-#     )
-#
-#     work_type = fields.Selection(
-#         string='Tipo de Trabajo',
-#         required=True,
-#         default='trans',
-#         selection=[('trans', 'Transporte'),
-#                    ('hora', 'Horario')],
-#     )
-#
-#     currency_id = fields.Many2one(
-#         string='Moneda',
-#         comodel_name='res.currency',
-#         readonly=True,
-#     )
-#
-#     cost = fields.Monetary(
-#         string='Costo Unitario',
-#         currency_field='currency_id',
-#     )
+class rate(models.Model):
+    _name = 'heavy_equipment.rate'
+    _order = 'name'
+
+    name = fields.Char(
+        string='Nombre',
+        required=True,
+    )
+
+    description = fields.Text(
+        string='Descripción',
+    )
+
+    project = fields.Many2one(
+        comodel_name='heavy_equipment.project',
+        string='Proyecto',
+        required='False',
+    )
+
+    vehicles = fields.Many2many(
+        comodel_name='fleet.vehicle',
+        string='Vehículos',
+        required='True',
+    )
+
+    work_type = fields.Selection(
+        string='Tipo de Trabajo',
+        required=True,
+        default='trans',
+        selection=[('trans', 'Transporte'),
+                   ('hora', 'Horario')],
+    )
+
+    currency_id = fields.Many2one(
+        string='Moneda',
+        comodel_name='res.currency',
+        default=lambda x: x.env['res.currency'].search([], limit=1),
+    )
+
+    rate = fields.Monetary(
+        string='Tarifa M3/Km o Hr',
+        currency_field='currency_id',
+    )
