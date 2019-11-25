@@ -113,7 +113,7 @@ class route(models.Model):
         default=lambda x: x.env['res.currency'].search([], limit=1),
     )
 
-    cost = fields.monetary(
+    cost = fields.Monetary(
         string='costo (m3/km)',
         currency_field='currency_id',
     )
@@ -242,7 +242,7 @@ class work(models.Model):
         readonly=True,
     )
 
-    total_cost = fields.monetary(
+    total_cost = fields.Monetary(
         string='Costo Total',
         currency_field='currency_id',
     )
@@ -294,7 +294,7 @@ class work(models.Model):
 #         readonly=True,
 #     )
 #
-#     cost = fields.monetary(
+#     cost = fields.Monetary(
 #         string='Costo Unitario',
 #         currency_field='currency_id',
 #     )
