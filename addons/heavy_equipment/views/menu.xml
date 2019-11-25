@@ -35,6 +35,12 @@
             id="heavy_equipment.work_menu"
             parent="heavy_equipment.base_menu"
             action="heavy_equipment.work_action"/>
+        <menuitem
+            name="Tarifas"
+            sequence="45"
+            id="heavy_equipment.rate_menu"
+            parent="heavy_equipment.base_menu"
+            action="heavy_equipment.rate_action"/>
  -->
     </data>
 </odoo>

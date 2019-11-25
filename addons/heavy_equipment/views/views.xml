@@ -11,10 +11,10 @@
       <field name="name">Projecto Formulario</field>
       <field name="model">heavy_equipment.project</field>
       <field name="arch" type="xml">
-        <header>
-            <field name="state"  widget="statusbar" options="{'clickable': '1'}"/>
-        </header>
         <form>
+            <header>
+                <field name="state"  widget="statusbar" options="{'clickable': '1'}"/>
+            </header>
             <group>
                 <field name="project_id"/>
                 <field name="contractor"/>
@@ -24,7 +24,7 @@
                 <field name="vehicles"/>
             </group>
         </form>
-      </field>
+        </field>
     </record>
 
     <record model="ir.ui.view" id="heavy_equipment.project_list">
@@ -94,8 +94,9 @@
                 <field name="origin"/>
                 <field name="destination"/>
                 <field name="distance"/>
+                <field name="rate"/>
                 <field name="currency_id"/>
-                <field name="cost"/>
+                <field name="rate_val"/>
             </group>
         </form>
       </field>
@@ -110,7 +111,6 @@
           <field name="project" widget="many2many_tags"/>
           <field name="origin"/>
           <field name="destination"/>
-          <field name="cost"/>
           <field name="distance"/>
         </tree>
       </field>
@@ -125,7 +125,7 @@
     </record>
 
     <record model="ir.ui.view" id="heavy_equipment.material_form">
-      <field name="name">Projecto Formulario</field>
+      <field name="name">Material Formulario</field>
       <field name="model">heavy_equipment.material</field>
       <field name="arch" type="xml">
         <form>
@@ -142,7 +142,7 @@
     </record>
 
     <record model="ir.ui.view" id="heavy_equipment.material_list">
-      <field name="name">Projecto Lista</field>
+      <field name="name">Material Lista</field>
       <field name="model">heavy_equipment.material</field>
       <field name="arch" type="xml">
         <tree>
@@ -175,14 +175,17 @@
                     <field name="work_type"/>
                     <field name="internal"/>
                     <field name="route" attrs="{'invisible': [('internal', '=', True)]}"/>
+                    <field name="material" attrs="{'invisible': [('work_type', '=', 'hora')], 'required': [('work_type','=', 'trans')]}"/>
                     <field name="site" attrs="{'invisible': [('internal', '=', False), ('work_type', '=', 'trans')]}"/>
                 </group>
                 <group>
                     <field name="date"/>
-                    <field name="material" attrs="{'invisible': [('work_type', '=', 'hora')], 'required': [('work_type','=', 'trans')]}"/>
                     <field name="amount" attrs="{'invisible': [('work_type', '=', 'hora')]}"/>
                     <field name="unit_quantity"/>
                     <field name="total_quantity"/>
+                    <field name="rate"/>
+                    <field name="currency_id" attrs="{'invisible': 1}"/>
+                    <field name="total_cost"/>
                 </group>
             </group>
         </form>
@@ -200,6 +203,7 @@
           <field name="project"/>
           <field name="material"/>
           <field name="amount"/>
+          <field name="total_cost"/>
           <field name="total_quantity"/>
         </tree>
       </field>
@@ -210,8 +214,8 @@
       <field name="model">heavy_equipment.work</field>
       <field name="arch" type="xml">
           <pivot string="Análisis de Trabajo" display_quantity="False">
-              <field name="plate" type="col"/>
               <field name="amount" type="measure"/>
+              <field name="plate" type="col"/>
               <field name="route" type="row"/>
               <field name="date" interval="day" type="row"/>
           </pivot>
@@ -235,6 +239,45 @@
                 <filter name="group_date" string="Por Fecha" context="{'group_by': 'date'}"/>
             </search>
         </field>
+    </record>
+
+    <!-- Rate views  -->
+
+    <record model="ir.actions.act_window" id="heavy_equipment.rate_action">
+      <field name="name">Tarifas</field>
+      <field name="res_model">heavy_equipment.rate</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.rate_form">
+      <field name="name">Tarifa Formulario</field>
+      <field name="model">heavy_equipment.rate</field>
+      <field name="arch" type="xml">
+        <form>
+            <group>
+                <field name="name"/>
+                <field name="project"/>
+                <field name="work_type"/>
+                <field name="currency_id"/>
+                <field name="rate"/>
+                <field name="vehicles" attrs="{'invisible': [('work_type', '=', 'trans')]}"/>
+                <field name="description"/>
+            </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="heavy_equipment.rate_list">
+      <field name="name">Tarifa Lista</field>
+      <field name="model">heavy_equipment.rate</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="project"/>
+           <field name="work_type"/>
+          <field name="rate"/>
+        </tree>
+      </field>
     </record>
 
     <!-- server action to the one above -->
