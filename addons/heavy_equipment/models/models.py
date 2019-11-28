@@ -241,7 +241,7 @@ class work(models.Model):
     )
 
     rate = fields.Many2one(
-        required=True,
+        required=False,
         readonly=False,
         store=True,
         compute='_compute_rate',
