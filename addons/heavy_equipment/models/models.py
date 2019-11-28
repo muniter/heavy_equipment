@@ -219,6 +219,19 @@ class work(models.Model):
         string='Ruta',
     )
 
+    route_distance = fields.Float(
+        string='Acarreo (Km)',
+        related='route.distance',
+        readonly=True,
+    )
+
+    volume_distance = fields.Float(
+        string='M3/Km',
+        readonly=True,
+        compute='_compute_cost',
+        store=True,
+    )
+
     site = fields.Many2one(
         comodel_name='heavy_equipment.site',
         string='Sitio',
@@ -295,7 +308,7 @@ class work(models.Model):
                      ('work_type', '=', 'hora'),
                      ('vehicles', 'in', record.vehicle.id)])
 
-    @api.depends('unit_quantity', 'amount', 'work_type', 'rate_val')
+    @api.depends('unit_quantity', 'amount', 'work_type')
     def _compute_total(self):
         for record in self:
             if record.work_type == 'hora':
@@ -304,13 +317,17 @@ class work(models.Model):
             else:
                 record.total_quantity = record.unit_quantity * record.amount
 
-    @api.depends('rate', 'total_quantity')
+    @api.depends('route_distance', 'rate', 'rate_val', 'total_quantity',
+                 'volume_distance')
     def _compute_cost(self):
         for record in self:
             if record.work_type == 'trans':
                 rate = record.rate.rate * record.route.distance
+                record.volume_distance = record.total_quantity *\
+                    record.route_distance
             else:
                 rate = record.rate.rate
+                record.volume_distance = 0
 
             record.total_cost = record.total_quantity * rate
 

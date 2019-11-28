@@ -111,6 +111,7 @@
           <field name="project" widget="many2many_tags"/>
           <field name="origin"/>
           <field name="destination"/>
+          <field name="rate"/>
           <field name="distance"/>
         </tree>
       </field>
@@ -175,6 +176,7 @@
                     <field name="work_type"/>
                     <field name="internal"/>
                     <field name="route" attrs="{'invisible': [('internal', '=', True)]}"/>
+                    <field name="route_distance" attrs="{'invisible': [('work_type', '=', 'hora')]}"/>
                     <field name="material" attrs="{'invisible': [('work_type', '=', 'hora')], 'required': [('work_type','=', 'trans')]}"/>
                     <field name="site" attrs="{'invisible': [('internal', '=', False), ('work_type', '=', 'trans')]}"/>
                 </group>
@@ -183,7 +185,8 @@
                     <field name="amount" attrs="{'invisible': [('work_type', '=', 'hora')]}"/>
                     <field name="unit_quantity"/>
                     <field name="total_quantity"/>
-                    <field name="rate"/>
+                    <field name="volume_distance" attrs="{'invisible': [('work_type', '=', 'hora')]}"/>
+                    <field name="rate" required="True"/>
                     <field name="currency_id" attrs="{'invisible': 1}"/>
                     <field name="total_cost"/>
                 </group>
@@ -202,9 +205,11 @@
           <field name="work_type"/>
           <field name="project"/>
           <field name="material"/>
+          <field name="route"/>
           <field name="amount"/>
-          <field name="total_cost"/>
           <field name="total_quantity"/>
+          <field name="volume_distance"/>
+          <field name="total_cost"/>
         </tree>
       </field>
     </record>
@@ -233,6 +238,7 @@
                 <filter name="filter_hourly" string="Horario" domain="[('work_type','=','hora')]"/>
                 <filter name="group_work_type" string="Por Tipo" context="{'group_by': 'work_type'}"/>
                 <filter name="group_route" string="Por Rutas" context="{'group_by': 'route'}"/>
+                <filter name="group_rate" string="Por Tarifa" context="{'group_by': 'rate'}"/>
                 <filter name="group_site" string="Por Sitio" context="{'group_by': 'site'}"/>
                 <filter name="group_material" string="Por Material" context="{'group_by': 'material'}"/>
                 <filter name="group_plate" string="Por Placa" context="{'group_by': 'plate'}"/>
