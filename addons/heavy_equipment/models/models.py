@@ -237,6 +237,14 @@ class work(models.Model):
         string='Sitio',
     )
 
+    document_id = fields.Char(
+        string='Remisión',
+    )
+
+    document = fields.Binary(
+        string='Soporte',
+    )
+
     amount = fields.Integer(
         string='Número de Viajes',
         default=1,

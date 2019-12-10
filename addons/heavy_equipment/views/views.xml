@@ -184,6 +184,8 @@
                     <field name="date"/>
                     <field name="amount" attrs="{'invisible': [('work_type', '=', 'hora')]}"/>
                     <field name="unit_quantity"/>
+                    <field name="document_id"/>
+                    <field name="document"/>
                     <field name="total_quantity"/>
                     <field name="volume_distance" attrs="{'invisible': [('work_type', '=', 'hora')]}"/>
                     <field name="rate" required="True"/>
@@ -206,6 +208,7 @@
           <field name="project"/>
           <field name="material"/>
           <field name="route"/>
+          <field name="document_id"/>
           <field name="amount"/>
           <field name="total_quantity"/>
           <field name="volume_distance"/>
@@ -236,6 +239,8 @@
                 <field name="route" domain="[('route','ilike', self)]"/>
                 <filter name="filter_transport" string="Transporte" domain="[('work_type','=','trans')]"/>
                 <filter name="filter_hourly" string="Horario" domain="[('work_type','=','hora')]"/>
+                <filter name="filter_remision" string="Con Remisión" domain="[('document_id','!=',None)]"/>
+                <filter name="filter_no_remision" string="Sin Remisión" domain="[('document_id','=',None)]"/>
                 <filter name="group_work_type" string="Por Tipo" context="{'group_by': 'work_type'}"/>
                 <filter name="group_route" string="Por Rutas" context="{'group_by': 'route'}"/>
                 <filter name="group_rate" string="Por Tarifa" context="{'group_by': 'rate'}"/>
